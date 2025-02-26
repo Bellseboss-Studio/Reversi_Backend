@@ -1,0 +1,40 @@
+{
+  "name": "OthelloServer",
+  "version": "1.0.0",
+  "description": "Othello (Reversi) game server with Node.js and MySQL",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.4.7",
+    "express": "^4.18.2",
+    "mysql2": "^3.6.0",
+    "sequelize": "^6.32.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "eslint": "^8.53.0",
+    "prettier": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/luisplata/Reversi_Backend.git"
+  },
+  "keywords": [
+    "othello",
+    "reversi",
+    "nodejs",
+    "mysql",
+    "game-server"
+  ],
+  "author": "Luis Plata (PeryLoth)",
+  "license": "GNU GENERAL PUBLIC LICENSE"
+}
