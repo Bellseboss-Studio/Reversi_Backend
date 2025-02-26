@@ -1,0 +1,47 @@
+name: Deploy Backend
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Execute SSH commands
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            source $HOME/${{ secrets.NODE_ENV_PATH }} && cd $HOME/${{ secrets.APP_DIR }}
+            LOG_FILE="${{ secrets.APP_DIR }}/deployment_$(date '+%Y-%m-%d_%H-%M-%S').log"
+            {
+              echo "Pulling latest changes..."
+              git pull origin main
+            
+              echo "Installing dependencies..."
+              npm install --omit=dev
+            
+              #echo "Building the project (if necessary)..."
+              #npm run build || echo "No build step defined."
+            
+              echo "Applying database migrations (if necessary)..."
+              npx sequelize-cli db:migrate || echo "No migrations to apply."
+            
+              echo "Clearing and caching dependencies..."
+              npm cache clean --force
+            
+              #echo "Restarting application..."
+              #pm2 restart ${{ secrets.APP_NAME }} || echo "Make sure PM2 is installed and running."
+            } > $LOG_FILE 2>&1 || {
+              echo "An error occurred during deployment. See $LOG_FILE for details."
+            }
