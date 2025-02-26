@@ -23,7 +23,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             source $HOME/${{ secrets.NODE_ENV_PATH }} && cd $HOME/${{ secrets.APP_DIR }}
-            LOG_FILE="${{ secrets.APP_DIR }}/deployment_$(date '+%Y-%m-%d_%H-%M-%S').log"
+            LOG_FILE="$HOME/${{ secrets.APP_DIR }}/deployment_$(date '+%Y-%m-%d_%H-%M-%S').log"
             {
               echo "Pulling latest changes..."
               git pull origin main
