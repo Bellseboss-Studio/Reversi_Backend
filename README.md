@@ -1,5 +1,7 @@
 # OthelloServer
 
+![Backend Deployment](https://github.com/luisplata/Reversi_Backend/actions/workflows/main.yml/badge.svg)
+
 OthelloServer is a backend API for playing Othello (Reversi) online. It is built using **Node.js**, **Express**, and **MySQL** (via Sequelize ORM).
 
 ## Features
