@@ -1,5 +1,5 @@
 const express = require('express');
-const {Sequelize, DataTypes} = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 const bodyParser = require('body-parser');
 require('dotenv').config();
 
@@ -18,7 +18,6 @@ const sequelize = new Sequelize(DATABASE, USER, PASSWORD, {
 
 const app = express();
 app.use(bodyParser.json());
-
 // Modelo de Partida
 const Game = sequelize.define('Game', {
     board: {
@@ -33,6 +32,20 @@ const Game = sequelize.define('Game', {
         type: DataTypes.STRING,
         allowNull: false,
         defaultValue: 'ongoing'
+    }
+}, {
+    // Sobrescribir el método toJSON
+    defaultScope: {
+        attributes: {
+            exclude: []
+        }
+    },
+    instanceMethods: {
+        toJSON: function () {
+            const values = Object.assign({}, this.get());
+            values.board = JSON.parse(values.board);
+            return values;
+        }
     }
 });
 
@@ -52,31 +65,31 @@ app.post('/game', async (req, res) => {
         [0, 0, 0, 0, 0, 0, 0, 0]
     ];
 
-    const game = await Game.create({board: initialBoard, currentPlayer: 'black'});
+    const game = await Game.create({ board: initialBoard, currentPlayer: 'black' });
     res.json(game);
 });
 
 // Obtener el estado de una partida
 app.get('/game/:id', async (req, res) => {
     const game = await Game.findByPk(req.params.id);
-    if (!game) return res.status(404).json({error: 'Partida no encontrada'});
+    if (!game) return res.status(404).json({ error: 'Partida no encontrada' });
     res.json(game);
 });
 
 // Obtener los movimientos válidos
 app.get('/game/:id/valid-moves', async (req, res) => {
     const game = await Game.findByPk(req.params.id);
-    if (!game) return res.status(404).json({error: 'Partida no encontrada'});
+    if (!game) return res.status(404).json({ error: 'Partida no encontrada' });
 
     let player = game.currentPlayer === 'black' ? 1 : 2;
     let validMoves = getValidMoves(game.board, player);
-    res.json({validMoves, player: game.currentPlayer});
+    res.json({ validMoves, player: game.currentPlayer });
 });
 
 // Obtener el estado de la partida
 app.get('/game/:id/status', async (req, res) => {
     const game = await Game.findByPk(req.params.id);
-    if (!game) return res.status(404).json({error: 'Partida no encontrada'});
+    if (!game) return res.status(404).json({ error: 'Partida no encontrada' });
 
     let player1CanPlay = canPlay(game.board, 1);
     let player2CanPlay = canPlay(game.board, 2);
@@ -86,26 +99,26 @@ app.get('/game/:id/status', async (req, res) => {
         status = 'finished';
     }
 
-    res.json({status, curren_turn: game.currentPlayer});
+    res.json({ status, curren_turn: game.currentPlayer });
 });
 
 // Realizar un movimiento
 app.post('/game/:id/move', async (req, res) => {
-    const {x, y} = req.body;
+    const { x, y } = req.body;
     const game = await Game.findByPk(req.params.id);
-    if (!game) return res.status(404).json({error: 'Partida no encontrada'});
+    if (!game) return res.status(404).json({ error: 'Partida no encontrada' });
 
     let player = game.currentPlayer === 'black' ? 1 : 2;
     let validMoves = getValidMoves(game.board, player);
 
     if (!validMoves.some(move => move.x === x && move.y === y)) {
-        return res.status(400).json({error: 'Movimiento inválido'});
+        return res.status(400).json({ error: 'Movimiento inválido' });
     }
 
     let newBoard = makeMove(game.board, x, y, player);
     let nextPlayer = player === 1 ? 'white' : 'black';
 
-    await game.update({board: newBoard, currentPlayer: nextPlayer});
+    await game.update({ board: newBoard, currentPlayer: nextPlayer });
     res.json(game);
 });
 
@@ -134,7 +147,7 @@ function getValidMoves(board, player) {
                 }
 
                 if (hasOpponentBetween && nx >= 0 && nx < 8 && ny >= 0 && ny < 8 && board[nx][ny] === player) {
-                    validMoves.push({x, y});
+                    validMoves.push({ x, y });
                     break;
                 }
             }
