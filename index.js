@@ -21,10 +21,11 @@ app.use(bodyParser.json());
 // Modelo de Partida
 const Game = sequelize.define('Game', {
     board: {
-        type: DataTypes.JSON, // Almacena el estado del tablero
+        type: DataTypes.TEXT, // Mantiene TEXT si no puedes cambiarlo en MySQL
         allowNull: false,
         get() {
-            return JSON.parse(this.getDataValue('board'));
+            const value = this.getDataValue('board');
+            return value ? JSON.parse(value) : null;
         },
         set(value) {
             this.setDataValue('board', JSON.stringify(value));
@@ -38,20 +39,6 @@ const Game = sequelize.define('Game', {
         type: DataTypes.STRING,
         allowNull: false,
         defaultValue: 'ongoing'
-    }
-}, {
-    // Sobrescribir el método toJSON
-    defaultScope: {
-        attributes: {
-            exclude: []
-        }
-    },
-    instanceMethods: {
-        toJSON: function () {
-            const values = Object.assign({}, this.get());
-            values.board = JSON.parse(values.board);
-            return values;
-        }
     }
 });
 
