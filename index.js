@@ -23,16 +23,16 @@ const Game = sequelize.define('Game', {
     board: {
         type: DataTypes.JSON, // Almacena el estado del tablero
         allowNull: false,
-    },
-    currentPlayer: {
-        type: DataTypes.STRING,
-        allowNull: false,
         get() {
             return JSON.parse(this.getDataValue('board'));
         },
         set(value) {
             this.setDataValue('board', JSON.stringify(value));
         }
+    },
+    currentPlayer: {
+        type: DataTypes.STRING,
+        allowNull: false,
     },
     status: {
         type: DataTypes.STRING,
