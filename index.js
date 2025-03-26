@@ -27,6 +27,12 @@ const Game = sequelize.define('Game', {
     currentPlayer: {
         type: DataTypes.STRING,
         allowNull: false,
+        get() {
+            return JSON.parse(this.getDataValue('board'));
+        },
+        set(value) {
+            this.setDataValue('board', JSON.stringify(value));
+        }
     },
     status: {
         type: DataTypes.STRING,
